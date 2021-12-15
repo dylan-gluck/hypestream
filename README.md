@@ -1,5 +1,6 @@
 # HypeStream
 
+![HypeStream Screenshot](screenshot.jpg)
 Bot that pulls the latest trending videos from TikTok, concatonates into single video & uploads to youtube.
 
 ## Usage
