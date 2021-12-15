@@ -1,4 +1,4 @@
-![HypeStream Screenshot](screenshot.jpg)
+![HypeStream Screenshot](screen.jpg)
 
 # HypeStream
 
