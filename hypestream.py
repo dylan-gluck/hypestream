@@ -28,28 +28,42 @@ print("""
 88      |_.'|   .' | .' |/                   \  \ |  `.  | `._-Lee|  88
 88     .'   | .'   |/|  /                     \ |`!   |`.|    `.  |  88
 88  _.'     !'|   .' | /                       \|  `  |  `.    |`.|  88
-88 HypeStream v0.0.1 88888888888888888888888888888888888888888888888888
+88 HypeStream v0.0.2 88888888888888888888888888888888888888888888888888
 
 """)
 
-INDEX = input("Series Index: ")
+# Get Series Index
+def series_index(filename="index.dat"):
+    with open(filename, "a+") as f:
+        f.seek(0)
+        val = int(f.read() or 1) + 1
+        f.seek(0)
+        f.truncate()
+        f.write(str(val))
+        return val
+
+# Get Values from User
+INDEX = str(series_index())
 TITLE = input("Video Title: ")
-VIDEO_TITLE = TITLE + " | HypeStream Comp " + INDEX
+FETCH_SIZE = int(input("Number of videos to fetch (300): ") or "300")
+SELECT_SIZE = int(input("Number of videos to select (30): ") or "30")
+VIDEO_TITLE = TITLE + " | HypeStream TikTok Compilation " + INDEX
 VIDEO_FILE = "./out/tiktok-trending-videos-" + INDEX + ".mp4"
 print("Full Title: " + VIDEO_TITLE)
+print("Fetching " + str(SELECT_SIZE) + " videos from top " + str(FETCH_SIZE) + " trending.")
 
 # Create API Instance
-print("Fetching Top 300 TikTok Videos")
+print("Downloading Video Data")
 api = tt.get_instance()
-# Get 200 Videos from API
-trending = api.by_trending(count=300)
-# Select Random 30
-print("Selecting Random 30")
+# Get (FETCH_SIZE) Videos from API
+trending = api.by_trending(count=FETCH_SIZE)
+# Select Random (SELECT_SIZE)
+print("Downloading Random " + str(SELECT_SIZE))
 random.shuffle(trending)
 
 # Loop Over Results, Save in Memory video_ids[]
 video_ids = []
-for tiktok in trending[0:30]:
+for tiktok in trending[0:SELECT_SIZE]:
     # Create Path
     video_ids.append(tiktok['id'])
     # Download Video
@@ -84,7 +98,7 @@ for _id in video_ids:
     
 # Create Concat Video
 # No other way to do this and get the audio working
-print("Processing Concat Video")
+print("Processing Concat Video... This could take a while")
 joined = ffmpeg.concat(*_v, v=1, a=1)
 out_video = joined.node[0].filter('fps', fps=24, round='up').filter("setsar", sar="1/1")
 out_audio = joined.node[1]
@@ -97,4 +111,10 @@ for path in tmp:
     os.remove(path)
 
 # Done
-print("Done. Exiting")
+print("""
+
+---------------------------------------------
+New Video Created at: """ + VIDEO_FILE + """
+
+Done! Exiting...
+""")
