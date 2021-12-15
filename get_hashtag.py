@@ -1,21 +1,44 @@
 import os
+import random
+import string
 import urllib.request
 import ffmpeg
 from TikTokApi import TikTokApi
 
 # Banner
 print("""
-######################################################
-######  HypeStream v0.0.1                       ######
-######                            Hashtag Comp  ######
-######################################################
+          __ __
+        ,;::\:\\
+      ,'/' `/'`/
+  _\,: '.,-'.-':.
+ -./"'  :    :  :\/,
+  ::.  ,:____;__; :-
+  :"  ( .`-*'o*',);
+   \.. ` `---'`' /
+    `:._..-   _.'
+    ,;  .     `.
+   /"'| |      \\
+  ::. ) :        :
+  |" (   \       |
+  :.(_,  :       ;
+   \'`-'_/      /
+    `...   , _,'
+     |,|  : |
+     |`|  | |
+     |,|  | |
+ ,--.;`|  | '..--.
+/;' "' ;  '..--. ))
+\:.___(___   ) ))'
+      Hype`-'-''
 
 """)
 hashtag = input("Enter Hashtag: ")
 
 # Create API Instance
 print("Fetching Top 10 TikTok Videos with Hashtag: " + hashtag)
-api = TikTokApi.get_instance()
+verifyFp = "verify_" + ''.join(random.choice(string.ascii_letters) for num in range(40))
+did = ''.join(random.choice(string.digits) for num in range(19))
+api = TikTokApi.get_instance(use_selenium=True, custom_verifyFp=verifyFp, custom_device_id=did)
 
 # Get Videos from API
 trending = api.by_hashtag(hashtag, count=10)
@@ -32,13 +55,14 @@ for tiktok in trending:
 
 # Split Video & Audio
 # Add Padding to Video 16:9
+# Store in Memory _v[]
 print("Processing Videos to 16:9")
-videos = []
-tmp_files = []
+_v = []
+tmp = []
 for _id in video_ids:
     # Format Video to 16:9
     path = "./tmp/" + _id + ".mp4"
-    PAD_OPTIONS = {
+    options = {
         'width':'1820',
         'height':'1024',
         'x':'662',
@@ -47,34 +71,36 @@ for _id in video_ids:
     }
     video = ffmpeg.input(path)
     processed = {
-        "video": ffmpeg.filter(video,"pad",**PAD_OPTIONS),
-        "audio": video.audio
+        "v": ffmpeg.filter(video,"pad",**options),
+        "a": video.audio
     }
-    videos.append(processed)
-    tmp_files.append(path)
+    _v.append(processed)
+    tmp.append(path)
     
 # Create Concat Video
+# No other way to do this and get the audio working
 print("Processing Concat Video")
 joined = ffmpeg.concat(
-    videos[0]['video'], videos[0]['audio'], 
-    videos[1]['video'], videos[1]['audio'], 
-    videos[2]['video'], videos[2]['audio'], 
-    videos[3]['video'], videos[3]['audio'],
-    videos[4]['video'], videos[4]['audio'], 
-    videos[5]['video'], videos[5]['audio'], 
-    videos[6]['video'], videos[6]['audio'], 
-    videos[7]['video'], videos[7]['audio'],
-    videos[8]['video'], videos[8]['audio'], 
-    videos[9]['video'], videos[9]['audio'], 
+    _v[0]['v'], _v[0]['a'], 
+    _v[1]['v'], _v[1]['a'], 
+    _v[2]['v'], _v[2]['a'], 
+    _v[3]['v'], _v[3]['a'],
+    _v[4]['v'], _v[4]['a'], 
+    _v[5]['v'], _v[5]['a'], 
+    _v[6]['v'], _v[6]['a'], 
+    _v[7]['v'], _v[7]['a'],
+    _v[8]['v'], _v[8]['a'], 
+    _v[9]['v'], _v[9]['a'], 
     v=1, a=1
 )
 out_video = ffmpeg.filter(joined.node[0],'fps', fps=24, round='up')
 out_audio = joined.node[1]
 out = ffmpeg.output(out_video, out_audio, "./out/tiktok-top-10-" + hashtag + ".mp4")
-out.run()
+out.run(quiet=True, overwrite_output=True)
 
 # Remove Temp Files
-for path in tmp_files:
+for path in tmp:
     os.remove(path)
 
-
+# Done
+print("Done. Exiting")
