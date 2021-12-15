@@ -1,0 +1,14 @@
+{
+  "name": "hypestream",
+  "displayName": "HypeStream",
+  "version": "0.0.1",
+  "description": "Python bot to pull the latest trending videos from TikTok, concatonate into single video and upload to youtube.",
+  "main": "index.js",
+  "keywords": [
+    "TikTok",
+    "Bot",
+    "Python"
+  ],
+  "author": "Dylan Navajas Gluck",
+  "license": "ISC"
+}
