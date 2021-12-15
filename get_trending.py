@@ -74,11 +74,6 @@ for _id in video_ids:
         'color': 'Black'
     }
     video = ffmpeg.input(path)
-    # video_scaled = video.video.filter("setsar", sar="1/1").filter("scale", w="-1", h="1080").filter("pad",**options)
-    # processed = {
-    #     "v": video_scaled,
-    #     "a": video.audio
-    # }
     _v.append(
         video["v"]
         .filter("scale", w="-1", h="1080")
