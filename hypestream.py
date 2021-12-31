@@ -7,40 +7,28 @@ from TikTokApi import TikTokApi as tt
 
 # Banner
 print("""
-88888888888888888888888888888888888888888888888888888888888888888888888
-88.._|      | `-.  | `.  -_-_ _-_  _-  _- -_ -  .'|   |.'|     |  _..88
-88   `-.._  |    |`!  |`.  -_ -__ -_ _- _-_-  .'  |.;'   |   _.!-'|  88
-88      | `-!._  |  `;!  ;. _______________ ,'| .-' |   _!.i'     |  88
-88..__  |     |`-!._ | `.| |_______________||."'|  _!.;'   |     _|..88
-88   |``"..__ |    |`";.| i|_|MMMMMMMMMMM|_|'| _!-|   |   _|..-|'    88
-88   |      |``--..|_ | `;!|l|MMoMMMMoMMM|1|.'j   |_..!-'|     |     88
-88   |      |    |   |`-,!_|_|MMMMP'YMMMM|_||.!-;'  |    |     |     88
-88___|______|____!.,.!,.!,!|d|MMMo * loMM|p|,!,.!.,.!..__|_____|_____88
-88      |     |    |  |  | |_|MMMMb,dMMMM|_|| |   |   |    |      |  88
-88      |     |    |..!-;'i|r|MPYMoMMMMoM|r| |`-..|   |    |      |  88
-88      |    _!.-j'  | _!,"|_|M<>MMMMoMMM|_||!._|  `i-!.._ |      |  88
-88     _!.-'|    | _."|  !;|1|MbdMMoMMMMM|l|`.| `-._|    |``-.._  |  88
-88..-i'     |  _.''|  !-| !|_|MMMoMMMMoMM|_|.|`-. | ``._ |     |``"..88
-88   |      |.|    |.|  !| |u|MoMMMMoMMMM|n||`. |`!   | `".    |     88
-88   |  _.-'  |  .'  |.' |/|_|MMMMoMMMMoM|_|! |`!  `,.|    |-._|     88
-88  _!"'|     !.'|  .'| .'|[@]MMMMMMMMMMM[@] \|  `. | `._  |   `-._  88
-88-'    |   .'   |.|  |/| /                 \|`.  |`!    |.|      |`-88
-88      |_.'|   .' | .' |/                   \  \ |  `.  | `._-Lee|  88
-88     .'   | .'   |/|  /                     \ |`!   |`.|    `.  |  88
-88  _.'     !'|   .' | /                       \|  `  |  `.    |`.|  88
-88 HypeStream v0.0.2 88888888888888888888888888888888888888888888888888
-
-HypeStream TikTok Trending Video Bot
-by: Dylan Navajas Gluck
+  |\/\/\/\/\/|
+  |          |
+  |          |
+  |          |
+  |    __  __|
+  |   /  \/  \ 
+  |  (o   )o  )
+ /c   \__/ --.
+ \_   ,     -'
+  |  '\_______)
+  |      _)
+  |     |
+ /`-----'\  Hypestream v0.0.3 
+/         \ TikTok Top Trending Video Bot
 -----------------------------------------------------------------------
-
 """)
 
 # Get Series Index
 def series_index(filename="index.dat"):
     with open(filename, "a+") as f:
         f.seek(0)
-        val = int(f.read() or 1) + 1
+        val = int(f.read() or 0) + 1
         f.seek(0)
         f.truncate()
         f.write(str(val))
@@ -48,10 +36,9 @@ def series_index(filename="index.dat"):
 
 # Get Values from User
 INDEX = str(series_index())
-TITLE = "Top Trending TikTok Compilation " + INDEX
 FETCH_SIZE = int(input("[!] Number of videos to fetch (1000): ") or "1000")
-SELECT_SIZE = int(input("[!] Number of videos to select (50): ") or "50")
-VIDEO_TITLE = TITLE + " | HypeStream Comp"
+SELECT_SIZE = int(input("[!] Number of videos to select (25): ") or "25")
+VIDEO_TITLE = "Top Trending TikTok Mashup " + INDEX + " | HypeStream Comp"
 VIDEO_FILE = "./out/tiktok-trending-videos-" + INDEX + ".mp4"
 
 print("""
@@ -108,8 +95,9 @@ for _id in video_ids:
 # Create Concat Video
 print("-> Processing Concat Video ...")
 joined = ffmpeg.concat(*_v, v=1, a=1)
-out_video = joined.node[0].filter('fps', fps=24, round='up').filter("setsar", sar="1/1")
-out_audio = joined.node[1]
+# Filter video and audio separately and then combine
+out_video = joined.node[0].filter('setpts', '0.5*PTS').filter('fps', fps=24, round='up').filter("setsar", sar="1/1")
+out_audio = joined.node[1].filter('atempo', '2.0')
 out = ffmpeg.output(out_video, out_audio, VIDEO_FILE)
 out.run(quiet=True, overwrite_output=True)
 

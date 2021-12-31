@@ -1,4 +1,4 @@
-![HypeStream Screenshot](screen.jpg)
+![HypeStream Screenshot](images/screen.jpg)
 
 # HypeStream
 
@@ -26,6 +26,14 @@ python ./hypestream.py
   - If user selects 300 top videos and selects 30 per video, create multiple videos in batch.
 
 ## Changelog
+
+v0.0.3
+
+- Works with youtube copyright algorithm
+- Sped up audio and video x2
+- Successfully uploaded video with no content restrictions
+
+![Youtube Screenshot](images/youtube.jpg)
 
 v0.0.2
 
